@@ -142,18 +142,45 @@ Object.assign( WaveAnimation.prototype, {
             renderer.render(scene, camera);
         });
     
-        // add head beharviour to animation
+        // add left arm beharviour to animation
+        let leftUpperArmTweed = new TWEEN.Tween( {theta: 0} )
+        .to( {theta: Math.PI / 8 }, 500)
+        .delay(500)
+        .onUpdate(function(){
+            
+            let [x,y,z] = [left_upper_arm.position.x, left_upper_arm.position.y, left_upper_arm.position.z];
+            let pivot = {x: 0, y: 2, z: 0};
+
+            left_upper_arm.matrix
+            .makeTranslation(0,0,0)
+            .premultiply( new THREE.Matrix4().makeTranslation(-pivot.x, -pivot.y, -pivot.z))
+            .premultiply( new THREE.Matrix4().makeRotationZ(-this._object.theta))
+            .premultiply( new THREE.Matrix4().makeTranslation(pivot.x, pivot.y, pivot.z))
+            .premultiply( new THREE.Matrix4().makeTranslation(x, y, z))
+            ;
+
+            // Updating final world matrix (with parent transforms) - mandatory
+            left_upper_arm.updateMatrixWorld(true);
+            // Updating screen
+            stats.update();
+            renderer.render(scene, camera);
+        });
+
         let leftLowerArmTweed = new TWEEN.Tween( {theta: 0} )
-        .to( {theta: Math.PI / 6 }, 500)
+        .to( {theta: Math.PI / 8 }, 500)
         .delay(500)
         .onUpdate(function(){
             
             let [x,y,z] = [left_lower_arm.position.x, left_lower_arm.position.y, left_lower_arm.position.z];
+            let pivot = {x: 0, y: 2, z: 0};
 
             left_lower_arm.matrix
             .makeTranslation(0,0,0)
+            .premultiply( new THREE.Matrix4().makeTranslation(-pivot.x, -pivot.y, -pivot.z))
+            .premultiply( new THREE.Matrix4().makeRotationZ(-this._object.theta))
+            .premultiply( new THREE.Matrix4().makeTranslation(pivot.x, pivot.y, pivot.z))
             .premultiply( new THREE.Matrix4().makeTranslation(x, y, z))
-            .premultiply( new THREE.Matrix4().makeRotationZ(-this._object.theta));
+            ;
 
             // Updating final world matrix (with parent transforms) - mandatory
             left_lower_arm.updateMatrixWorld(true);
@@ -170,6 +197,7 @@ Object.assign( WaveAnimation.prototype, {
         handTween.start();   
         handTweenBackwards.start();
         leftLowerArmTweed.start();
+        leftUpperArmTweed.start();
     },
     animate: function(time) {
         window.requestAnimationFrame(this.animate.bind(this));
