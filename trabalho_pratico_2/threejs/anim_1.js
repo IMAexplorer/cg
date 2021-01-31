@@ -1,6 +1,6 @@
-function WaveAnimation() {}
+function LaughAnimation() {}
 
-Object.assign( WaveAnimation.prototype, {
+Object.assign( LaughAnimation.prototype, {
 
     init: function() {
         
@@ -9,8 +9,7 @@ Object.assign( WaveAnimation.prototype, {
         var right_hand = right_lower_arm.getObjectByName("hand");
 
         let left_upper_arm =  robot.getObjectByName("left_upper_arm");
-        let left_lower_arm =  left_upper_arm.getObjectByName("lower_arm"); 
-        var left_hand = left_lower_arm.getObjectByName("hand");
+        let left_lower_arm =  left_upper_arm.getObjectByName("lower_arm");
 
         let upperArmTween = new TWEEN.Tween( {theta:0} )
             .to( {theta: Math.PI/2 }, 500)
