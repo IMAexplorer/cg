@@ -49,7 +49,7 @@ Object.assign( WaveAnimation.prototype, {
                                                     
 
             // Updating final world matrix (with parent transforms) - mandatory
-            right_upper_arm.updateMatrixWorld(true);
+            right_lower_arm.updateMatrixWorld(true);
             // Updating screen
             stats.update();
             renderer.render(scene, camera);
@@ -73,6 +73,30 @@ Object.assign( WaveAnimation.prototype, {
 
             // Updating final world matrix (with parent transforms) - mandatory
             right_upper_arm.updateMatrixWorld(true);
+            // Updating screen
+            stats.update();
+            renderer.render(scene, camera);
+        });
+
+        let handTween = new TWEEN.Tween( {theta: Math.PI / 4} )
+        .to( {theta: 0 }, 500)
+        .onUpdate(function(){
+            
+            var right_hand = right_lower_arm.getObjectByName("hand"); 
+            
+            let [x,y,z] = [right_hand.position.x, right_hand.position.y, right_hand.position.z];
+            let pivot = {x: 0, y: 2, z: 0};
+            
+
+            right_hand.matrix
+            .makeTranslation(0,0,0)
+            .premultiply( new THREE.Matrix4().makeTranslation(-pivot.x, -pivot.y, -pivot.z))
+            .premultiply( new THREE.Matrix4().makeRotationZ(this._object.theta))
+            
+            ;
+
+            // Updating final world matrix (with parent transforms) - mandatory
+            right_hand.updateMatrixWorld(true);
             // Updating screen
             stats.update();
             renderer.render(scene, camera);
@@ -103,7 +127,8 @@ Object.assign( WaveAnimation.prototype, {
         upperArmTween.start();
         armTweenFoward.start();
         armTweenBackward.start();
-        headTweed.start();          
+        headTweed.start();       
+        handTween.start();   
     },
     animate: function(time) {
         window.requestAnimationFrame(this.animate.bind(this));
