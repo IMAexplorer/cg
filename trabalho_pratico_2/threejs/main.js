@@ -97,17 +97,19 @@ function onDocumentKeyDown(event) {
     // For now, only works for Handwave
     
     console.log(event.key);
-    key = parseInt(event.key);
+    var key = parseInt(event.key);
 
-    animations = {
+    var animations = {
         1 : WaveAnimation,
         2 : false,
         3 : false,
     };
 
     // Run selected animation
-    animation = new animations[1]();
+    var animation = new animations[1]();
     animation.run()
+    
+    
 }
 
 init();

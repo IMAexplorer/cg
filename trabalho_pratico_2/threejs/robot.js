@@ -10,7 +10,7 @@ function gen_robot() {
     torso.name = "torso";
 
     // head
-    var head = gen_circle(1.6);
+    var head = gen_rect(3,3);
     head.name = "head";
     head.position.y = 4.8;
     head.position.z = -0.05;  // Not necessary, makes head not in front of other robot parts
@@ -60,7 +60,6 @@ function gen_robot() {
     // right: upper leg, leg, foot
     var right_upper_leg = left_upper_leg.clone();
     right_upper_leg.name = "right_upper_leg";
-    // TODO change the name of the children objects after clone
     // define position
     right_upper_leg.position.x = -1.2;
     
@@ -72,8 +71,6 @@ function gen_robot() {
     torso.add(left_upper_arm);
     torso.add(left_upper_leg);
     torso.add(right_upper_leg);
-    // TO DO: add remaining robot parts hierarchical relations
-
 
     robot.name = "robot";
 
