@@ -6,6 +6,11 @@ Object.assign( WaveAnimation.prototype, {
         
         let right_upper_arm =  robot.getObjectByName("right_upper_arm");
         let right_lower_arm =  right_upper_arm.getObjectByName("lower_arm"); 
+        var right_hand = right_lower_arm.getObjectByName("hand");
+
+        let left_upper_arm =  robot.getObjectByName("left_upper_arm");
+        let left_lower_arm =  left_upper_arm.getObjectByName("lower_arm"); 
+        var left_hand = left_lower_arm.getObjectByName("hand");
 
         let upperArmTween = new TWEEN.Tween( {theta:0} )
             .to( {theta: Math.PI/2 }, 500)
@@ -14,10 +19,7 @@ Object.assign( WaveAnimation.prototype, {
                 // This is an example of rotation of the right_upper_arm 
                 // Notice that the transform is M = T * R                 
                 let [x,y,z] = [right_upper_arm.position.x, right_upper_arm.position.y, right_upper_arm.position.z];
-                let pivot = {x: 0, y: 2, z: 0};
-
-                console.log('-------------------');
-                console.log(right_upper_arm.position);
+                let pivot = {x: 0, y: 2, z: 0};                
 
                 right_upper_arm.matrix.makeTranslation(0,0,0)
                     .premultiply( new THREE.Matrix4().makeTranslation(-pivot.x, -pivot.y, -pivot.z ))
@@ -78,21 +80,38 @@ Object.assign( WaveAnimation.prototype, {
             renderer.render(scene, camera);
         });
 
-        let handTween = new TWEEN.Tween( {theta: Math.PI / 4} )
-        .to( {theta: 0 }, 500)
+        let handTween = new TWEEN.Tween( {theta: 0} )
+        .to( {theta: Math.PI / 2}, 500)
+        .delay(1000)
         .onUpdate(function(){
             
-            var right_hand = right_lower_arm.getObjectByName("hand"); 
+           
+            let [x,y,z] = [right_hand.position.x, right_hand.position.y, right_hand.position.z];            
             
-            let [x,y,z] = [right_hand.position.x, right_hand.position.y, right_hand.position.z];
-            let pivot = {x: 0, y: 2, z: 0};
-            
-
             right_hand.matrix
             .makeTranslation(0,0,0)
-            .premultiply( new THREE.Matrix4().makeTranslation(-pivot.x, -pivot.y, -pivot.z))
             .premultiply( new THREE.Matrix4().makeRotationZ(this._object.theta))
+            .premultiply( new THREE.Matrix4().makeTranslation(x, y, z))            
+            ;
+
+            // Updating final world matrix (with parent transforms) - mandatory
+            right_hand.updateMatrixWorld(true);
+            // Updating screen
+            stats.update();
+            renderer.render(scene, camera);
+        });
+
+        let handTweenBackwards = new TWEEN.Tween( {theta: Math.PI / 2} )
+        .to( {theta: 0 }, 500)
+        .delay(1500)
+        .onUpdate(function(){            
             
+            let [x,y,z] = [right_hand.position.x, right_hand.position.y, right_hand.position.z];
+            
+            right_hand.matrix
+            .makeTranslation(0,0,0)
+            .premultiply( new THREE.Matrix4().makeRotationZ(this._object.theta))
+            .premultiply( new THREE.Matrix4().makeTranslation(x, y, z))            
             ;
 
             // Updating final world matrix (with parent transforms) - mandatory
@@ -122,6 +141,26 @@ Object.assign( WaveAnimation.prototype, {
             stats.update();
             renderer.render(scene, camera);
         });
+    
+        // add head beharviour to animation
+        let leftLowerArmTweed = new TWEEN.Tween( {theta: 0} )
+        .to( {theta: Math.PI / 6 }, 500)
+        .delay(500)
+        .onUpdate(function(){
+            
+            let [x,y,z] = [left_lower_arm.position.x, left_lower_arm.position.y, left_lower_arm.position.z];
+
+            left_lower_arm.matrix
+            .makeTranslation(0,0,0)
+            .premultiply( new THREE.Matrix4().makeTranslation(x, y, z))
+            .premultiply( new THREE.Matrix4().makeRotationZ(-this._object.theta));
+
+            // Updating final world matrix (with parent transforms) - mandatory
+            left_lower_arm.updateMatrixWorld(true);
+            // Updating screen
+            stats.update();
+            renderer.render(scene, camera);
+        });
         
         // start animations
         upperArmTween.start();
@@ -129,6 +168,8 @@ Object.assign( WaveAnimation.prototype, {
         armTweenBackward.start();
         headTweed.start();       
         handTween.start();   
+        handTweenBackwards.start();
+        leftLowerArmTweed.start();
     },
     animate: function(time) {
         window.requestAnimationFrame(this.animate.bind(this));
