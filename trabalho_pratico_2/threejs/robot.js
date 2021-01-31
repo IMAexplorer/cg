@@ -60,6 +60,7 @@ function gen_robot() {
     // right: upper leg, leg, foot
     var right_upper_leg = left_upper_leg.clone();
     right_upper_leg.name = "right_upper_leg";
+    // TODO change the name of the children objects after clone
     // define position
     right_upper_leg.position.x = -1.2;
     
