@@ -110,15 +110,21 @@ Object.assign( LaughAnimation.prototype, {
         // add head beharviour to animation ================================================7
         var initial_delay = 100;
         var head_animations = [];
+        var body_animations = [];
 
         for (var i = 0; i < 10; i++) {            
-
             var head_tweed = returns_head_animation(initial_delay, i);            
             head_animations.push(head_tweed);         
             
             initial_delay += 100;
         }
         
+        for (var i = 0; i < 10; i++) {            
+            var body_tweed = returns_body_animation(initial_delay, i);            
+            body_animations.push(body_tweed);         
+            
+            initial_delay += 100;
+        }
         
         // start animations
         rightUpperArmTween.start();
@@ -129,6 +135,9 @@ Object.assign( LaughAnimation.prototype, {
             head_tweed.start();
         });
         
+        body_animations.forEach(body_tweed => {
+            body_tweed.start();
+        });
     },
     animate: function(time) {
         window.requestAnimationFrame(this.animate.bind(this));
@@ -167,4 +176,33 @@ function returns_head_animation(custom_delay, power) {
         });
 
     return headTweed;
+}
+
+
+function returns_body_animation(custom_delay, power) {
+
+    let bodyTweed = new TWEEN.Tween( {theta: 0} )
+        .to( {theta: 0.1 }, 500)
+        .delay(custom_delay)
+        .onUpdate(function(){
+                    
+            let body =  robot.getObjectByName("body");
+            let [x,y,z] = [body.position.x, body.position.y, body.position.z];
+
+            var operation = (-1) ** power;
+
+            body.matrix
+            .makeTranslation(0,0,0)
+            //.premultiply( new THREE.Matrix4().makeTranslation(x, y, z))
+            .premultiply( new THREE.Matrix4().makeTranslation(x, y + operation * 0.5, z))
+            ;
+
+            // Updating final world matrix (with parent transforms) - mandatory
+            body.updateMatrixWorld(true);
+            // Updating screen
+            stats.update();
+            renderer.render(scene, camera);
+        });
+
+    return bodyTweed;
 }
