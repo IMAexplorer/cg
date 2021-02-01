@@ -38,6 +38,29 @@ Object.assign( PolichineloAnimation.prototype, {
                 renderer.render(scene, camera);
             });
 
+            let rightUpperArmTweenBack = new TWEEN.Tween( {theta: Math.PI} )
+            .to( {theta: 0 }, 500)
+            .delay(500)
+            .onUpdate(function(){
+                
+                // This is an example of rotation of the right_upper_arm 
+                // Notice that the transform is M = T * R                 
+                let [x,y,z] = [right_upper_arm.position.x, right_upper_arm.position.y, right_upper_arm.position.z];
+                let pivot = {x: 0, y: 2, z: 0};                
+
+                right_upper_arm.matrix.makeTranslation(0,0,0)
+                    .premultiply( new THREE.Matrix4().makeTranslation(-pivot.x, -pivot.y, -pivot.z ))
+                    .premultiply( new THREE.Matrix4().makeRotationZ(this._object.theta))
+                    .premultiply( new THREE.Matrix4().makeTranslation(pivot.x, pivot.y, pivot.z ))
+                    .premultiply( new THREE.Matrix4().makeTranslation(x, y, z ));                        
+
+                // Updating final world matrix (with parent transforms) - mandatory
+                right_upper_arm.updateMatrixWorld(true);
+                // Updating screen
+                stats.update();
+                renderer.render(scene, camera);
+            });
+
         // add left arm beharviour to animation
         let leftUpperArmTweed = new TWEEN.Tween( {theta: 0} )
         .to( {theta: Math.PI }, 500)        
@@ -60,9 +83,53 @@ Object.assign( PolichineloAnimation.prototype, {
             renderer.render(scene, camera);
         });
 
+        // add left arm beharviour to animation
+        let leftUpperArmTweedBack = new TWEEN.Tween( {theta: Math.PI} )
+        .to( {theta: 0 }, 500)
+        .delay(500)
+        .onUpdate(function(){
+            
+            let [x,y,z] = [left_upper_arm.position.x, left_upper_arm.position.y, left_upper_arm.position.z];
+            let pivot = {x: 0, y: 2, z: 0};
+
+            left_upper_arm.matrix
+            .makeTranslation(0,0,0)
+            .premultiply( new THREE.Matrix4().makeTranslation(-pivot.x, -pivot.y, -pivot.z))
+            .premultiply( new THREE.Matrix4().makeRotationZ(-this._object.theta))
+            .premultiply( new THREE.Matrix4().makeTranslation(pivot.x, pivot.y, pivot.z))
+            .premultiply( new THREE.Matrix4().makeTranslation(x, y, z));
+
+            // Updating final world matrix (with parent transforms) - mandatory
+            left_upper_arm.updateMatrixWorld(true);
+            // Updating screen
+            stats.update();
+            renderer.render(scene, camera);
+        });
 
         let leftUpperLegTweed = new TWEEN.Tween( {theta: 0} )
         .to( {theta: Math.PI /4 }, 500)        
+        .onUpdate(function(){
+            
+            let [x,y,z] = [left_upper_leg.position.x, left_upper_leg.position.y, left_upper_leg.position.z];
+            let pivot = {x: 0, y: 2, z: 0};
+
+            left_upper_leg.matrix
+            .makeTranslation(0,0,0)
+            .premultiply( new THREE.Matrix4().makeTranslation(-pivot.x, -pivot.y, -pivot.z))
+            .premultiply( new THREE.Matrix4().makeRotationZ(this._object.theta))
+            .premultiply( new THREE.Matrix4().makeTranslation(pivot.x, pivot.y, pivot.z))
+            .premultiply( new THREE.Matrix4().makeTranslation(x, y, z));
+
+            // Updating final world matrix (with parent transforms) - mandatory
+            left_upper_leg.updateMatrixWorld(true);
+            // Updating screen
+            stats.update();
+            renderer.render(scene, camera);
+        });
+
+        let leftUpperLegTweedBack = new TWEEN.Tween( {theta: Math.PI /4} )
+        .to( {theta: 0 }, 500)
+        .delay(500)    
         .onUpdate(function(){
             
             let [x,y,z] = [left_upper_leg.position.x, left_upper_leg.position.y, left_upper_leg.position.z];
@@ -102,13 +169,41 @@ Object.assign( PolichineloAnimation.prototype, {
             stats.update();
             renderer.render(scene, camera);
         });
+
+        let rightUpperLegTweedBack = new TWEEN.Tween( {theta: Math.PI /4} )
+        .to( {theta: 0 }, 500)
+        .delay(500)
+        .onUpdate(function(){
+            
+            let [x,y,z] = [right_upper_leg.position.x, right_upper_leg.position.y, right_upper_leg.position.z];
+            let pivot = {x: 0, y: 2, z: 0};
+
+            right_upper_leg.matrix
+            .makeTranslation(0,0,0)
+            .premultiply( new THREE.Matrix4().makeTranslation(-pivot.x, -pivot.y, -pivot.z))
+            .premultiply( new THREE.Matrix4().makeRotationZ(-this._object.theta))
+            .premultiply( new THREE.Matrix4().makeTranslation(pivot.x, pivot.y, pivot.z))
+            .premultiply( new THREE.Matrix4().makeTranslation(x, y, z));
+
+            // Updating final world matrix (with parent transforms) - mandatory
+            right_upper_leg.updateMatrixWorld(true);
+            // Updating screen
+            stats.update();
+            renderer.render(scene, camera);
+        });
        
         
         // start animations
         rightUpperArmTween.start();
         leftUpperArmTweed.start();   
         leftUpperLegTweed.start();
-        rightUpperLegTweed.start();  
+        rightUpperLegTweed.start();
+        
+        // back
+        rightUpperArmTweenBack.start();
+        leftUpperArmTweedBack.start();
+        leftUpperLegTweedBack.start();
+        rightUpperLegTweedBack.start();
     
     },
     animate: function(time) {
